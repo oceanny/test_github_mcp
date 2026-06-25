@@ -1,0 +1,68 @@
+name: "[샘플] 🐛 버그 리포트 Form"
+description: "폼 기반 버그 리포트 샘플"
+title: "[BUG][SAMPLE] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: 버그 요약
+      placeholder: 예) 주문 생성 시 500 에러 발생
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 영향 범위
+      options:
+        - Critical
+        - Major
+        - Minor
+        - Trivial
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: services
+    attributes:
+      label: 영향 서비스
+      options:
+        - label: API Gateway
+        - label: User Service
+        - label: Product Service
+        - label: Order Service
+        - label: Kafka
+        - label: Common
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 절차
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대 동작
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 동작
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: 환경 정보
+      description: OS / Java / 실행 방식 등
+      placeholder: 예) Windows 11, Java 17, Docker Compose

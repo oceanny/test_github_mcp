@@ -1,0 +1,63 @@
+name: "[샘플] ✨ 기능 요청 Form"
+description: "폼 기반 기능 요청 샘플"
+title: "[FEATURE][SAMPLE] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        이 템플릿은 비교용 샘플입니다.
+        기존 템플릿은 유지되며, 이슈 작성 UX를 확인하기 위해 추가되었습니다.
+
+  - type: input
+    id: summary
+    attributes:
+      label: 기능 요약
+      description: 한 줄로 기능을 요약해주세요.
+      placeholder: 예) 주문 생성 API 비동기 처리
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 우선순위
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: services
+    attributes:
+      label: 대상 서비스
+      options:
+        - label: API Gateway
+        - label: User Service
+        - label: Product Service
+        - label: Order Service
+        - label: Kafka
+        - label: Common
+
+  - type: textarea
+    id: pain_point
+    attributes:
+      label: 현재 문제점
+      placeholder: 현재 어떤 불편/문제가 있는지 작성해주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 수용 조건
+      description: Given / When / Then 형태로 작성
+      placeholder: |
+        Given ...
+        When ...
+        Then ...
+    validations:
+      required: true

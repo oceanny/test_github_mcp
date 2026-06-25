@@ -1,0 +1,41 @@
+name: "[샘플] 📚 문서 작업 Form"
+description: "폼 기반 문서 작업 요청 샘플"
+title: "[DOCS][SAMPLE] "
+labels: ["documentation"]
+body:
+  - type: dropdown
+    id: doc_type
+    attributes:
+      label: 문서 작업 유형
+      options:
+        - 새 문서 작성
+        - 기존 문서 수정
+        - 문서 구조 개편
+        - 번역
+        - 불필요 문서 삭제
+    validations:
+      required: true
+
+  - type: input
+    id: target
+    attributes:
+      label: 대상 문서 경로
+      placeholder: 예) docs/07-testing-guide.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_problem
+    attributes:
+      label: 현재 상태 / 문제점
+      placeholder: 어떤 내용이 부족하거나 잘못되었는지 작성
+    validations:
+      required: true
+
+  - type: textarea
+    id: update_content
+    attributes:
+      label: 작성/수정할 내용
+      placeholder: 반영하고 싶은 핵심 내용을 작성
+    validations:
+      required: true
