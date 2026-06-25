@@ -109,6 +109,7 @@ GET    /api/v1/orders/{orderId}   # 주문 조회
 - [코드 리뷰 가이드](./docs/06-code-review-guide.md)
 - [테스트 가이드](./docs/07-testing-guide.md)
 - [리팩토링 가이드](./docs/08-refactoring-guide.md)
+- [PR 테스트 샘플 변경](./docs/test-branch-sample-change.md)
 
 ## 🔌 API 문서
 
