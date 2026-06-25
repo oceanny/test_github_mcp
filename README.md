@@ -1,168 +1,199 @@
-# Test GitHub MCP Repository
+# MSA Copilot Training Project
 
-이 레포지토리는 GitHub MCP(Model Context Protocol)의 기능 테스트 및 검증을 위한 테스트 레포지토리입니다.
+GitHub Copilot 활용 교육을 위한 MSA(Microservices Architecture) 샘플 프로젝트입니다.
 
-## 📋 프로젝트 개요
+## 📚 프로젝트 개요
 
-- **목적**: GitHub MCP 도구 검증 및 마이크로서비스 아키텍처 학습
-- **기술 스택**: Java 17, Spring Boot 3.2, Apache Kafka, Docker
-- **아키텍처**: 마이크로서비스 아키텍처 (MSA)
+이 프로젝트는 간단한 E-Commerce 시스템을 MSA로 구현하여, 개발자들이 GitHub Copilot을 효과적으로 활용하는 방법을 학습할 수 있도록 설계되었습니다.
 
-## 🎯 주요 기능
+### 기술 스택
+- **Language**: Java 17
+- **Framework**: Spring Boot 3.2
+- **Database**: H2 In-Memory
+- **Messaging**: Apache Kafka
+- **API Gateway**: Spring Cloud Gateway
+- **Build Tool**: Gradle (Kotlin DSL)
+- **Container**: Docker & Docker Compose
 
-### 1. 이슈 관리
-- 기능 요청 (`Feature Request`)
-- 버그 리포트 (`Bug Report`)
-- 문서화 (`Documentation`)
-- 인프라 (`Infrastructure`)
-- 리팩토링 (`Refactoring`)
-
-### 2. 마이크로서비스
-- **API Gateway**: 모든 요청의 진입점
-- **User Service**: 사용자 관리
-- **Product Service**: 상품 정보 관리
-- **Order Service**: 주문 처리
-
-### 3. 메시지 큐
-- **Apache Kafka**: 서비스 간 비동기 통신
-
-## 📁 프로젝트 구조
+## 🏗️ 아키텍처
 
 ```
-.
-├── README.md                      # 프로젝트 설명 (이 파일)
-├── docker-compose.yml             # Docker Compose 설정
-├── build.gradle.kts              # 빌드 설정 (Kotlin DSL)
-├── settings.gradle.kts           # 멀티 프로젝트 설정
-├── api-gateway/                  # API Gateway 서비스
-├── user-service/                 # User Service
-├── product-service/              # Product Service
-├── order-service/                # Order Service
-├── common/                        # 공통 모듈
-├── docs/                          # 프로젝트 문서
-└── docker-images/                # Docker 이미지 설정
+┌─────────────────────────────────────────────────────────────────┐
+│                         Client                                   │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    API Gateway (8080)                            │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        │                     │                     │
+        ▼                     ▼                     ▼
+┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+│ User Service  │    │Product Service│    │ Order Service │
+│    (8081)     │    │    (8082)     │    │    (8083)     │
+└───────┬───────┘    └───────┬───────┘    └───────┬───────┘
+        │                    │                     │
+        └────────────────────┴─────────────────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │     Kafka       │
+                    │    (9092)       │
+                    └─────────────────┘
 ```
 
-## 🚀 빠른 시작
+### 서비스 구성
+
+| 서비스 | 포트 | 설명 |
+|--------|------|------|
+| API Gateway | 8080 | 라우팅, 진입점 |
+| User Service | 8081 | 사용자 관리 |
+| Product Service | 8082 | 상품/재고 관리 |
+| Order Service | 8083 | 주문 관리 |
+| Kafka | 9092 | 이벤트 메시징 |
+| Kafka UI | 8090 | Kafka 모니터링 |
+
+### Kafka 이벤트 흐름
+
+```
+[User Service] ──UserCreatedEvent──▶ [Kafka] ──▶ [Order Service]
+[Product Service] ──StockUpdatedEvent──▶ [Kafka] ──▶ [Order Service]
+[Order Service] ──OrderCreatedEvent──▶ [Kafka] ──▶ [Product Service] (재고 차감)
+```
+
+## 🚀 실행 방법
 
 ### 사전 요구사항
 - Java 17+
 - Docker & Docker Compose
-- Gradle 8.0+
+- Gradle 8.x (또는 Gradle Wrapper 사용)
 
-### 설치 및 실행
+### 로컬 실행 (개발 모드)
+
+1. **Kafka 실행** (Docker)
+```bash
+docker-compose up -d zookeeper kafka kafka-ui
+```
+
+2. **각 서비스 실행**
+```bash
+# 터미널 1: User Service
+./gradlew :user-service:bootRun
+
+# 터미널 2: Product Service
+./gradlew :product-service:bootRun
+
+# 터미널 3: Order Service
+./gradlew :order-service:bootRun
+
+# 터미널 4: API Gateway
+./gradlew :api-gateway:bootRun
+```
+
+### Docker Compose 전체 실행
 
 ```bash
-# 1. 레포지토리 클론
-git clone https://github.com/oceanny/test_github_mcp.git
-cd test_github_mcp
+# 전체 빌드 및 실행
+docker-compose up --build
 
-# 2. 프로젝트 빌드
-./gradlew build
+# 백그라운드 실행
+docker-compose up -d --build
 
-# 3. Docker Compose로 서비스 시작
-docker-compose up -d
-
-# 4. 서비스 상태 확인
-docker-compose ps
+# 종료
+docker-compose down
 ```
 
-## 📚 주요 엔드포인트
+## 📖 교육 자료
 
-### API Gateway (Port: 8080)
+`docs/` 폴더에 8단계 교육 자료가 준비되어 있습니다:
+
+| 단계 | 문서 | 내용 |
+|------|------|------|
+| 1 | [01-problem-definition.md](docs/01-problem-definition.md) | 요구사항 정의 |
+| 2 | [02-instruction-guide.md](docs/02-instruction-guide.md) | Copilot Instruction 활용 |
+| 3 | [03-development-spec.md](docs/03-development-spec.md) | 개발 정의서 작성 |
+| 4 | [04-prompt-guide.md](docs/04-prompt-guide.md) | 효과적인 프롬프트 작성 |
+| 5 | [05-code-reading-guide.md](docs/05-code-reading-guide.md) | AI 코드 이해하기 |
+| 6 | [06-code-review-guide.md](docs/06-code-review-guide.md) | 코드 검증/리뷰 |
+| 7 | [07-testing-guide.md](docs/07-testing-guide.md) | 테스트 코드 작성 |
+| 8 | [08-refactoring-guide.md](docs/08-refactoring-guide.md) | 리팩토링 |
+
+## 🛠️ API 엔드포인트
+
+### User Service
 ```
-POST   /api/v1/users              # 사용자 생성
-GET    /api/v1/users/{userId}     # 사용자 조회
-POST   /api/v1/products           # 상품 생성
-GET    /api/v1/products/{productId} # 상품 조회
-POST   /api/v1/orders             # 주문 생성
-GET    /api/v1/orders/{orderId}   # 주문 조회
+POST   /api/users          - 사용자 생성
+GET    /api/users/{id}     - 단일 사용자 조회
 ```
+
+### Product Service
+```
+POST   /api/products                    - 상품 생성
+GET    /api/products                    - 전체 상품 조회
+GET    /api/products/{id}               - 단일 상품 조회
+PATCH  /api/products/{id}/stock/decrease - 재고 감소
+```
+
+### Order Service
+```
+POST   /api/orders              - 주문 생성
+GET    /api/orders/{id}         - 단일 주문 조회
+```
+
+### 에러 응답 포맷
+
+- 모든 서비스는 `ApiResponse<T>` 형태로 성공/실패 응답을 반환합니다.
+- 전역 예외 처리는 서비스별 `@ControllerAdvice`로 처리합니다.
+- 비즈니스 예외는 `IllegalArgumentException`, `IllegalStateException`을 사용합니다.
+
+### 구현된 이벤트 처리
+
+- User Service: 사용자 생성 시 `UserCreatedEvent` 발행
+- Order Service: 주문 생성 시 `OrderCreatedEvent` 발행
+- Product Service: `OrderCreatedEvent` 구독 후 재고 차감, `StockUpdatedEvent` 발행
+- Order Service: `StockUpdatedEvent` 구독 (확장 포인트)
 
 ## 🧪 테스트
 
-### 단위 테스트 실행
 ```bash
+# 전체 테스트 실행
 ./gradlew test
+
+# 특정 서비스 테스트
+./gradlew :user-service:test
+./gradlew :product-service:test
+./gradlew :order-service:test
 ```
 
-### 통합 테스트 실행
-```bash
-./gradlew integrationTest
+## 📁 프로젝트 구조
+
+```
+msa-copilot-training/
+├── .github/
+│   └── copilot-instructions.md    # Copilot 조직 단위 설정
+├── docs/                           # 교육 자료
+├── common/                         # 공통 모듈 (DTO, Event)
+├── user-service/                   # 사용자 서비스
+├── product-service/                # 상품 서비스
+├── order-service/                  # 주문 서비스
+├── api-gateway/                    # API Gateway
+├── docker-compose.yml              # Docker 설정
+├── build.gradle.kts                # 루트 빌드 설정
+└── settings.gradle.kts             # 멀티모듈 설정
 ```
 
-### 테스트 결과 리포트
-```bash
-./gradlew testReport
-```
+## 🎯 학습 목표
 
-## 📖 문서
+이 프로젝트를 통해 다음을 학습할 수 있습니다:
 
-자세한 문서는 [docs/](./docs/) 폴더에서 확인할 수 있습니다.
+1. **Copilot Instruction** 활용으로 일관된 코드 품질 확보
+2. **3S 원칙** (Simple, Specific, Structured) 기반 프롬프트 작성
+3. **AI 생성 코드** 검증 및 리뷰 방법
+4. **MSA 환경**에서의 테스트 전략
+5. **Kafka 이벤트 기반** 서비스 간 통신
 
-- [커리큘럼 요약](./docs/00-curriculum-summary.md)
-- [문제 정의](./docs/01-problem-definition.md)
-- [개발 지침](./docs/02-instruction-guide.md)
-- [개발 사양](./docs/03-development-spec.md)
-- [코딩 가이드](./docs/04-prompt-guide.md)
-- [코드 읽기 가이드](./docs/05-code-reading-guide.md)
-- [코드 리뷰 가이드](./docs/06-code-review-guide.md)
-- [테스트 가이드](./docs/07-testing-guide.md)
-- [리팩토링 가이드](./docs/08-refactoring-guide.md)
-- [PR 테스트 샘플 변경](./docs/test-branch-sample-change.md)
+## 📝 라이선스
 
-## 🔌 API 문서
-
-API 상세 문서는 다음을 참고하세요:
-- OpenAPI/Swagger: `http://localhost:8080/swagger-ui.html`
-- API 스키마: `http://localhost:8080/v3/api-docs`
-
-## 🐛 이슈 보고
-
-버그나 기능 요청이 있으시면 [Issues](https://github.com/oceanny/test_github_mcp/issues) 탭에서 이슈를 생성해주세요.
-
-### 이슈 작성 가이드
-1. **중복 확인**: 기존 이슈와 중복되지 않는지 확인
-2. **템플릿 선택**: 해당하는 템플릿 선택 (Feature, Bug, Documentation 등)
-3. **상세 작성**: 최대한 상세하고 명확하게 작성
-4. **라벨 지정**: 적절한 라벨 추가
-
-## 💬 토론 및 질문
-
-버그나 기능 요청이 아닌 일반적인 질문이나 토론은 [Discussions](https://github.com/oceanny/test_github_mcp/discussions) 탭을 이용해주세요.
-
-## 🤝 기여
-
-이 프로젝트에 기여하고 싶으신 분은 다음 단계를 따라주세요:
-
-1. Fork 진행
-2. Feature Branch 생성 (`git checkout -b feature/AmazingFeature`)
-3. 변경사항 Commit (`git commit -m 'Add some AmazingFeature'`)
-4. Branch Push (`git push origin feature/AmazingFeature`)
-5. Pull Request 생성
-
-### 코드 컨벤션
-- **Java 코드 스타일**: Google Java Style Guide
-- **패키지명**: lowercase (예: `com.example.userservice`)
-- **클래스명**: PascalCase (예: `UserService`)
-- **메서드명**: camelCase (예: `createUser`)
-- **상수명**: UPPER_SNAKE_CASE (예: `MAX_RETRY_COUNT`)
-
-## 📝 라이센스
-
-이 프로젝트는 MIT 라이센스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
-
-## 👥 팀
-
-- **주관**: oceanny
-- **프로젝트 타입**: 마이크로서비스 아키텍처 학습 프로젝트
-
-## 📞 연락처
-
-질문이나 문의사항이 있으시면:
-- [GitHub Issues](https://github.com/oceanny/test_github_mcp/issues)
-- [GitHub Discussions](https://github.com/oceanny/test_github_mcp/discussions)
-
----
-
-**마지막 업데이트**: 2026-06-25
+This project is for educational purposes.
